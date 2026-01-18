@@ -14,7 +14,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return response()->json(Project::all(), 200);
+        $projects = Project::where('user_id', auth()->id())->get();
+        return response()->json($projects, 200);
     }
 
     /**
@@ -34,7 +35,12 @@ class ProjectController extends Controller
             ], 400);
         }
 
-        $project = Project::create($request->all());
+        $data['name'] = $request->name;
+        $data['description'] = $request->description;
+        $data['due_date'] = $request->due_date;
+        $data['user_id'] = auth()->id();
+
+        $project = Project::create($data);
 
         return response()->json($project, 201);
     }
@@ -80,6 +86,7 @@ class ProjectController extends Controller
         $project->name = $request->name;
         $project->description = $request->description;
         $project->due_date = $request->due_date;
+        $project->user_id = auth()->id();
 
         $project->save();
 
